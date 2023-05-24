@@ -5,3 +5,4 @@ terraform.tfstate
 terraform.tfstate.backup
 k3s-test-generated-ssh.key
 .terraform.lock.hcl
+k3s-test-generated-ssh-public.key
