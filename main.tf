@@ -62,6 +62,11 @@ resource "local_file" "admin-private-key" {
   file_permission = "0600"
 }
 
+resource "local_file" "admin-public-key" {
+  content    = tls_private_key.admin.public_key_openssh
+  filename = "${local.ssh_key_prefix_with_path}-public.key"
+}
+
 resource "null_resource" "provision-agent" { 
   provisioner "local-exec" {
     when = destroy

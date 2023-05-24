@@ -1,0 +1,12 @@
+%{ for addr, port in ip_addrs ~}
+backend ${addr}:${port}
+%{ endfor ~}
+
+
+${jsonencode({
+  "backends": [for addr in ip_addrs : "${addr}:${port}"],
+})}
+
+${yamlencode({
+  "backends": [for addr in ip_addrs : "${addr}:${port}"],
+})}
