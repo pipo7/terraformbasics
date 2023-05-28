@@ -1,0 +1,16 @@
+bar 1 true
+bar 1 true
+bar 1 true
+[count.index]
+[count.index]
+bar 1 true
+[count.index]
+bar 1 true
+[count.index]
+[count.index]
+[count.index]
+[count.index]
+[count.index]
+[count.index]
+bar 1 true
+bar 1 true

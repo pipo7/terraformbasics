@@ -22,6 +22,7 @@ provider "docker" {
 locals {
   name_prefix               = "${var.name}"
   ssh_key_prefix_with_path  = "${path.module}/${local.name_prefix}-generated-ssh"
+  ssh_key_path = "${path.module}/sshprvtkey"
   common_tags = {
     owner = "devops"
     service = "frontend"
@@ -48,7 +49,7 @@ resource "docker_container" "nginx" {
     internal = var.internal_port
     external = var.external_port
   }
-  
+
 }
 
 resource "tls_private_key" "admin" {
@@ -61,6 +62,7 @@ resource "local_file" "admin-private-key" {
   filename = "${local.ssh_key_prefix_with_path}.key"
   file_permission = "0600"
 }
+
 
 resource "local_file" "admin-public-key" {
   content    = tls_private_key.admin.public_key_openssh
@@ -75,23 +77,27 @@ resource "null_resource" "provision-agent" {
     EOT
     on_failure = fail // fail  if the provisioner fails
   }
- 
-  
 }
 
-# dynamic "test" {
-#   for_each = var.colors
-#   iterator = color
-#   content  {
-#     value = color.value
-#   }
-# }
+resource "null_resource" "localexec_example" { 
+  provisioner "local-exec" {
+    command = "echo $FOO $BAR $BAZ >> env_vars.txt"
+    environment = {
+      FOO = "bar"
+      BAR = 1
+      BAZ = "true"
+    }
+  }
+}
 
 // creates 3 times and we use as index for name
 resource "null_resource" "checkcounts" {
   count = var.istest == true ? 2 : 3
+  provisioner "local-exec" {
+    // trying to print dynamic index values to file
+    command = "echo $checkcounts[count.index] >> env_vars.txt"
+  }
 }
-
 
 resource "null_resource" "the-accounts" {
   for_each = toset( ["Todd", "James", "Alice", "Dottie"] )
@@ -104,3 +110,50 @@ resource "null_resource" "rg" {
   }
   
 }
+
+resource "null_resource" "SSHbyPassword" {
+
+  # Establishes connection to be used by all
+  # generic remote provisioners (i.e. file/remote-exec)
+  connection {
+    type     = "ssh"
+    user     = "user1"
+    password = var.user_password
+    host     = var.host
+    timeout      = "3m"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "cd terraformtests",
+      "rm file1.txt",
+      "echo 'user name is : ${var.user_name} added to file' > file1.txt",
+      // we can check the file has contents in remote host
+    ]
+  }
+}
+
+# resource "null_resource" "SSHbyKey" {
+
+#   # Establishes connection to be used by all
+#   # generic remote provisioners (i.e. file/remote-exec)
+
+# connection {
+#     host         = var.host
+#     type         = "ssh"
+#     user         = var.user_name
+#     //private_key  = "${local.ssh_key_path}.key"
+#     private_key  = "${file("./sshprvtkey.key")}"
+#     timeout      = "3m"
+#   }
+
+#   provisioner "remote-exec" {
+#     inline = [
+#       "cd terraformtests",
+#       "rm file2.txt",
+#       "echo 'user name is : ${var.user_name} added to file' > file2.txt",
+      
+#     ]
+#   }
+# }
+

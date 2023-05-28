@@ -4,7 +4,12 @@ variable "external_port" {
   default = 8000
   type    = number
 }
-
+variable "host" {
+  default = "10.0.0.1" // any random non existing IP the actual value is in terraform.tfvars
+}
+variable "user_password" {
+  default = "none"
+}
 
 variable "internal_port" {
   default = 81
@@ -29,4 +34,8 @@ variable "istest" {
 
 variable "colors" {
   default = "red" //false
+}
+
+variable "user_name" {
+  default = "ua3"
 }

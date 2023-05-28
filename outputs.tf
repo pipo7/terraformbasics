@@ -20,3 +20,4 @@ output "containerhostname" {
 output "datetimestamp" {
   value = formatdate("DD MMM YYYY hh:mm ZZZ", timestamp()) // out put the value of time of creation as per format
 }
+
