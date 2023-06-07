@@ -111,7 +111,9 @@ resource "null_resource" "rg" {
   
 }
 
-resource "null_resource" "SSHbyPassword" {
+// you may use null_resource of terraform_data also. 
+//refer https://developer.hashicorp.com/terraform/language/resources/terraform-data
+resource "terraform_data"  "SSHbyPassword" {
 
   # Establishes connection to be used by all
   # generic remote provisioners (i.e. file/remote-exec)
@@ -121,6 +123,8 @@ resource "null_resource" "SSHbyPassword" {
     password = var.user_password
     host     = var.host
     timeout      = "3m"
+    
+
   }
 
   provisioner "remote-exec" {
