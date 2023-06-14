@@ -113,18 +113,16 @@ resource "null_resource" "rg" {
 
 // you may use null_resource of terraform_data also. 
 //refer https://developer.hashicorp.com/terraform/language/resources/terraform-data
-resource "terraform_data"  "SSHbyPassword" {
+resource "terraform_data"  "SSHbyPassword1" {
 
   # Establishes connection to be used by all
   # generic remote provisioners (i.e. file/remote-exec)
   connection {
     type     = "ssh"
-    user     = "user1"
+    user     = var.user_name
     password = var.user_password
     host     = var.host
     timeout      = "3m"
-    
-
   }
 
   provisioner "remote-exec" {
@@ -137,27 +135,26 @@ resource "terraform_data"  "SSHbyPassword" {
   }
 }
 
-# resource "null_resource" "SSHbyKey" {
+resource "null_resource" "SSHbyKey3" {
 
-#   # Establishes connection to be used by all
-#   # generic remote provisioners (i.e. file/remote-exec)
+  # Establishes connection to be used by all
+  # generic remote provisioners (i.e. file/remote-exec)
 
-# connection {
-#     host         = var.host
-#     type         = "ssh"
-#     user         = var.user_name
-#     //private_key  = "${local.ssh_key_path}.key"
-#     private_key  = "${file("./sshprvtkey.key")}"
-#     timeout      = "3m"
-#   }
-
-#   provisioner "remote-exec" {
-#     inline = [
-#       "cd terraformtests",
-#       "rm file2.txt",
-#       "echo 'user name is : ${var.user_name} added to file' > file2.txt",
-      
-#     ]
-#   }
-# }
+  provisioner "remote-exec" {
+    inline = [
+      "cd terraformtests",
+      "rm file2.txt",
+      "echo 'user name is : ${var.user_name} added to file' > file2.txt",
+    ]
+    connection {
+    host         = var.host
+    type         = "ssh"
+    user         = var.user_name
+    agent = false
+    //private_key  = "${local.ssh_key_prefix_with_path}.key"
+    private_key = file("./id_rsa")
+    timeout      = "30s"
+  }
+  }
+}
 
